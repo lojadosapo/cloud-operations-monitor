@@ -7,6 +7,8 @@ on:
 jobs:
   update-monitor:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -16,14 +18,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # Extrai a mensagem enviada pelo orquestrador
           MESSAGE="${{ github.event.client_payload.message }}"
           TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
           
-          # Adiciona a linha ao ficheiro de log
           echo "[$TIMESTAMP] [SUCCESS] $MESSAGE" >> daily_uptime.log
           
-          # Realiza o commit
           git add daily_uptime.log
           git commit -m "infra: operations pulse check $TIMESTAMP" \
                      -m "Co-authored-by: pklavc <patrickajm@gmail.com>"
