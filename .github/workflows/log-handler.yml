@@ -14,13 +14,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Segurança de Logs e Mascaramento
-        run: |
-          # Mascara a mensagem recebida para evitar exibição nos logs do console
-          echo "::add-mask::${{ github.event.client_payload.message }}"
-
       - name: Write Execution Log
         env:
+          # Passar a mensagem via env é a forma segura de manipulá-la no shell
           LOG_MESSAGE: ${{ github.event.client_payload.message }}
         run: |
           git config user.name "github-actions[bot]"
@@ -28,16 +24,15 @@ jobs:
           
           TIMESTAMP=$(date +'%Y-%m-%d %H:%M:%S')
           
-          # Garante que o arquivo existe
           touch daily_uptime.log
           
+          # Usamos a variável $LOG_MESSAGE do ambiente para evitar exposição no log do console
           echo "[$TIMESTAMP] [SUCCESS] $LOG_MESSAGE" >> daily_uptime.log
           
           git add daily_uptime.log
           
-          # Verifica se há algo para commitar antes de disparar o comando
           git diff --quiet && git diff --staged --quiet || ( \
             git commit -m "infra: operations pulse check $TIMESTAMP" \
-                       -m "Co-authored-by: pklavc <patrickajm@gmail.com>" && \
+                        -m "Co-authored-by: pklavc <patrickajm@gmail.com>" && \
             git push \
           )
