@@ -32,7 +32,6 @@ jobs:
           git add daily_uptime.log
           
           git diff --quiet && git diff --staged --quiet || ( \
-            git commit -m "infra: operations pulse check $TIMESTAMP" \
-                        -m "Co-authored-by: pklavc <patrickajm@gmail.com>" && \
+            git commit -m "infra: operations pulse check $TIMESTAMP" && \
             git push \
           )
